@@ -8,4 +8,10 @@
     <dimen name="height_progressbar">30dp</dimen>
     <dimen name="layout_progressbar_margin">20dp</dimen>
     <dimen name="radius_rounded">10dp</dimen>
+    <dimen name="padding_normal_view">10dp</dimen>
+    <dimen name="text_small_size">12sp</dimen>
+    <dimen name="text_normal_size">14sp</dimen>
+    <dimen name="text_large_size">16sp</dimen>
+    <dimen name="text_x_large_size">18sp</dimen>
+    <dimen name="text_xx_large_size">20sp</dimen>
 </resources>

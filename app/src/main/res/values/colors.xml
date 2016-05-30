@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="blurGrey">#9beceaea</color>
     <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="colorDateText">#A2000000</color>
 </resources>
