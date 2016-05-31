@@ -38,7 +38,6 @@ public class ReadRssAsyntask extends AsyncTask<String, Void, List<News>> {
         return newses;
     }
 
-
     @Override
     protected void onPostExecute(List<News> result) {
         super.onPostExecute(result);

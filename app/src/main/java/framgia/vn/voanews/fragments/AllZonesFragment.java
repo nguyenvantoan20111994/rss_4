@@ -3,14 +3,18 @@ package framgia.vn.voanews.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import framgia.vn.voanews.R;
+import framgia.vn.voanews.adapters.NewsAdapter;
 import framgia.vn.voanews.asyntask.AsyncResponse;
 import framgia.vn.voanews.asyntask.ReadRssAsyntask;
 import framgia.vn.voanews.data.model.News;
@@ -27,10 +31,14 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     private static final String LINK_BUND = "link";
     private static final String TITLE_BUND = "title";
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RecyclerView mRecyclerViewNView;
     private String mLinkRss;
     private String mTitleRss;
     private NewsRepository mNewsRepository;
     private Realm mRealm;
+    private NewsAdapter mAdapter;
+    private List<News> mNewses = new ArrayList<>();
+
 
     public static AllZonesFragment newInstance(String link, String title) {
         AllZonesFragment allZonesFragment = new AllZonesFragment();
@@ -54,13 +62,22 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_allzones, container, false);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
-        mSwipeRefreshLayout.setColorSchemeColors(R.color.blurGrey);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        initViews(view);
         mRealm = Realm.getDefaultInstance();
         mNewsRepository = new NewsRepository(mRealm);
         loadData();
+
         return view;
+    }
+
+    private void initViews(View view) {
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        mRecyclerViewNView = (RecyclerView) view.findViewById(R.id.rv_news);
+        mSwipeRefreshLayout.setColorSchemeColors(R.color.blurGrey);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mRecyclerViewNView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mAdapter = new NewsAdapter(mNewses);
+        mRecyclerViewNView.setAdapter(mAdapter);
     }
 
     @Override
@@ -77,7 +94,8 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                         mNewsRepository.insertNews(output, new NewsContract.OnInsertNewsListener() {
                             @Override
                             public void onSuccess() {
-                                // TODO: 31/05/2016
+                                mNewses.addAll(mNewsRepository.getNewsByCategory(mTitleRss));
+                                mAdapter.notifyDataSetChanged();
                             }
                         });
                     }
