@@ -1,6 +1,7 @@
 package framgia.vn.voanews.activities;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +12,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.itextpdf.text.DocumentException;
 import com.squareup.picasso.Picasso;
 
@@ -41,6 +47,8 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     private NewsRepository mNewsRepository;
     private String mTitle;
     private String mCategory;
+    private ShareDialog mShareDialog;
+    private CallbackManager mCallbackManager;
     private CreatePdfUtil mCreatePdfUtil = new CreatePdfUtil();
 
     @Override
@@ -49,6 +57,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_news_detail);
         initData();
         initViews();
+        facebookSdkInitialize();
     }
 
     private void initViews() {
@@ -78,6 +87,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
                 startActivity(intent);
             }
         });
+        mButtonShare.setOnClickListener(this);
     }
 
     private void initData() {
@@ -113,6 +123,34 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
             case R.id.ib_print_pdf_details:
                 print();
             case R.id.ib_shares_details:
+                shareLink();
         }
+    }
+
+    public void facebookSdkInitialize() {
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        mCallbackManager = CallbackManager.Factory.create();
+    }
+
+    public void shareLink() {
+        mShareDialog = new ShareDialog(this);
+        ShareLinkContent shareLinkContent = new ShareLinkContent.Builder()
+                .setContentTitle(mNews.getTitle())
+                .setContentUrl(Uri.parse(mNews.getLink()))
+                .build();
+        ;
+        mShareDialog.show(shareLinkContent);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AppEventsLogger.deactivateApp(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AppEventsLogger.activateApp(this);
     }
 }
