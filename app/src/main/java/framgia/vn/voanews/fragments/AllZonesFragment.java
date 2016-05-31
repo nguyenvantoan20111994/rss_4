@@ -24,7 +24,6 @@ import framgia.vn.voanews.data.service.NewsContract;
 import framgia.vn.voanews.data.service.NewsRepository;
 import framgia.vn.voanews.utils.CheckConnectionUtil;
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 /**
  * Created by toannguyen201194 on 23/05/2016.
@@ -40,7 +39,6 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     private Realm mRealm;
     private NewsAdapter mAdapter;
     private List<News> mNewses = new ArrayList<>();
-
 
     public static AllZonesFragment newInstance(String link, String title) {
         AllZonesFragment allZonesFragment = new AllZonesFragment();
@@ -80,7 +78,7 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
         mRecyclerViewNView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new NewsAdapter(mNewses);
         mRecyclerViewNView.setAdapter(mAdapter);
-        mAdapter.setOnItemtClickListener(new NewsAdapter.OnItemtClickListener() {
+        mAdapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
                 News news = mNewses.get(position);

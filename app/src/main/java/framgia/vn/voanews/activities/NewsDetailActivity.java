@@ -6,22 +6,27 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.itextpdf.text.DocumentException;
 import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
 
 import framgia.vn.voanews.R;
 import framgia.vn.voanews.data.model.News;
 import framgia.vn.voanews.data.service.NewsRepository;
+import framgia.vn.voanews.utils.CreatePdfUtil;
 import framgia.vn.voanews.utils.TimeUtils;
 import io.realm.Realm;
 
 /**
  * Created by nghicv on 31/05/2016.
  */
-public class NewsDetailActivity extends AppCompatActivity {
+public class NewsDetailActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageView mImageViewNews;
     private TextView mTextViewTitle;
     private TextView mTextViewDate;
@@ -34,6 +39,7 @@ public class NewsDetailActivity extends AppCompatActivity {
     private NewsRepository mNewsRepository;
     private String mTitle;
     private String mCategory;
+    private CreatePdfUtil mCreatePdfUtil = new CreatePdfUtil();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +66,9 @@ public class NewsDetailActivity extends AppCompatActivity {
         mTextViewTitle.setText(mTitle);
         mTextViewDate.setText(TimeUtils.toStringDate(mNews.getDate()));
         mTextViewSubContent.setText(mNews.getDescription());
+        mButtonPrintPdf.setOnClickListener(this);
     }
+
     private void initData() {
         mRealm = Realm.getDefaultInstance();
         mNewsRepository = new NewsRepository(mRealm);
@@ -72,8 +80,28 @@ public class NewsDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home)
+        if (item.getItemId() == android.R.id.home)
             onBackPressed();
         return true;
+    }
+
+    public void print() {
+        try {
+            mCreatePdfUtil.printerPdf(mNews.getTitle(), String.valueOf(mNews.getDate())
+                    , mNews.getEnclosure(), mNews.getDescription());
+            mCreatePdfUtil.viewPdf(getApplication());
+        } catch (IOException | DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        switch (id) {
+            case R.id.ib_print_pdf_details:
+                print();
+            case R.id.ib_shares_details:
+        }
     }
 }
