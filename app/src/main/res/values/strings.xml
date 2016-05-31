@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">voaNews</string>
+    <string name="connect_network_error">Please check connection network!</string>
 </resources>

@@ -15,10 +15,10 @@ import framgia.vn.voanews.asyntask.AsyncResponse;
 import framgia.vn.voanews.asyntask.ReadRssAsyntask;
 import framgia.vn.voanews.data.model.News;
 import framgia.vn.voanews.data.service.NewsContract;
-import framgia.vn.voanews.data.service.NewsService;
-import framgia.vn.voanews.data.service.NewsServiceImp;
+import framgia.vn.voanews.data.service.NewsRepository;
 import framgia.vn.voanews.utils.CheckConnectionUtil;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by toannguyen201194 on 23/05/2016.
@@ -26,10 +26,10 @@ import io.realm.Realm;
 public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String LINK_BUND = "link";
     private static final String TITLE_BUND = "title";
-    public SwipeRefreshLayout mSwipeRefreshLayout;
-    public String linkRss;
-    public String titleRss;
-    private NewsService mNewsService;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private String mLinkRss;
+    private String mTitleRss;
+    private NewsRepository mNewsRepository;
     private Realm mRealm;
 
     public static AllZonesFragment newInstance(String link, String title) {
@@ -46,8 +46,8 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            linkRss = getArguments().getString(LINK_BUND);
-            titleRss = getArguments().getString(TITLE_BUND);
+            mLinkRss = getArguments().getString(LINK_BUND);
+            mTitleRss = getArguments().getString(TITLE_BUND);
         }
     }
 
@@ -58,7 +58,7 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
         mSwipeRefreshLayout.setColorSchemeColors(R.color.blurGrey);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mRealm = Realm.getDefaultInstance();
-        mNewsService = new NewsServiceImp(mRealm);
+        mNewsRepository = new NewsRepository(mRealm);
         loadData();
         return view;
     }
@@ -66,7 +66,6 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
     }
 
     public void loadData() {
@@ -75,18 +74,18 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                 @Override
                 public void processFinish(List<News> output) {
                     if (output != null) {
-                        mNewsService.insertNews(output, new NewsContract.OnInsertNewsListener() {
+                        mNewsRepository.insertNews(output, new NewsContract.OnInsertNewsListener() {
                             @Override
                             public void onSuccess() {
-
+                                // TODO: 31/05/2016
                             }
                         });
                     }
                 }
-            }).execute(linkRss, titleRss);
+            }).execute(mLinkRss, mTitleRss);
 
         } else {
-            Toast.makeText(getActivity(), "Please check connection network!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.connect_network_error), Toast.LENGTH_LONG).show();
         }
 
     }

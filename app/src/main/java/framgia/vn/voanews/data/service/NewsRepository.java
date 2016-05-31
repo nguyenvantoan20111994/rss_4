@@ -1,6 +1,8 @@
 package framgia.vn.voanews.data.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import framgia.vn.voanews.data.model.News;
@@ -11,16 +13,17 @@ import io.realm.RealmResults;
 /**
  * Created by nghicv on 24/05/2016.
  */
-public class NewsServiceImp implements NewsService {
+public class NewsRepository {
     public static final String TITLE_FIELD = "mTitle";
     public static final String CATEGORY_FIELD = "mCategory";
+    public static final String DATE_FIELD = "mDate";
+    public static final int NUM_OF_DAY_STORE = 10;
     private Realm mRealm;
 
-    public NewsServiceImp(Realm realm) {
+    public NewsRepository(Realm realm) {
         mRealm = realm;
     }
 
-    @Override
     public void insertNews(final News news, final NewsContract.OnInsertNewsListener onInsertNewsListenner) {
         mRealm.executeTransactionAsync(new Realm.Transaction() {
             @Override
@@ -36,7 +39,6 @@ public class NewsServiceImp implements NewsService {
         });
     }
 
-    @Override
     public void insertNews(final List<News> newses, final NewsContract.OnInsertNewsListener onInsertNewsListenner) {
         final List<News> realmNews = new ArrayList<>();
         for (int i = 0; i < newses.size(); i++) {
@@ -57,26 +59,22 @@ public class NewsServiceImp implements NewsService {
         });
     }
 
-    @Override
     public RealmResults<News> getAllNews() {
         return mRealm.where(News.class).findAll();
     }
 
-    @Override
     public void updateNewsToViewedNews(News news) {
         mRealm.beginTransaction();
         news.setIsViewed(true);
         mRealm.commitTransaction();
     }
 
-    @Override
     public News getNewsByTitle(String title) {
         return mRealm.where(News.class)
                 .equalTo(TITLE_FIELD, title)
                 .findFirst();
     }
 
-    @Override
     public RealmResults<News> getNewsByCategory(String category) {
         return mRealm.where(News.class)
                 .equalTo(CATEGORY_FIELD, category)
@@ -89,11 +87,26 @@ public class NewsServiceImp implements NewsService {
         mRealm.commitTransaction();
     }
 
-    @Override
     public boolean isExists(News news) {
-        if (news.getCategory().equals(LinkRssUtil.TITLE_RSS[0]))
-            return mRealm.where(News.class).equalTo(TITLE_FIELD, news.getTitle()).count() <= 1 ? false : true;
         return mRealm.where(News.class).equalTo(TITLE_FIELD, news.getTitle())
-                .notEqualTo(CATEGORY_FIELD, LinkRssUtil.TITLE_RSS[0]).count() == 0 ? false : true;
+                .equalTo(CATEGORY_FIELD, news.getCategory()).count() != 0;
+
+    }
+
+    public void deleteOldData() {
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_YEAR, -NUM_OF_DAY_STORE);
+        Date oldDate = calendar.getTime();
+        final RealmResults<News> results = mRealm.where(News.class).lessThan(DATE_FIELD, oldDate).findAll();
+        if (results == null)
+            return;
+        mRealm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                results.deleteAllFromRealm();
+            }
+        });
     }
 }
