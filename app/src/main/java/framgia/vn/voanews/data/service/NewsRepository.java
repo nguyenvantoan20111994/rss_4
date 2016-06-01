@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import framgia.vn.voanews.data.model.News;
-import framgia.vn.voanews.utils.LinkRssUtil;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -69,9 +68,10 @@ public class NewsRepository {
         mRealm.commitTransaction();
     }
 
-    public News getNewsByTitle(String title) {
+    public News getNewsByTitle(String title, String category) {
         return mRealm.where(News.class)
                 .equalTo(TITLE_FIELD, title)
+                .equalTo(CATEGORY_FIELD, category)
                 .findFirst();
     }
 

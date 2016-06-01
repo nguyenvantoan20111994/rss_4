@@ -26,6 +26,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     // The mNewses to display in your RecyclerView
     private List<News> mNewses;
     private Context mContext;
+    private OnItemClickListener mOnItemClickListener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public NewsAdapter(List<News> items) {
@@ -60,11 +61,11 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         switch (viewType) {
             case ITEM_HOT_NEW:
                 View hotNewsView = inflater.inflate(R.layout.item_hot_news, viewGroup, false);
-                viewHolder = new HotNewsViewHolder(hotNewsView);
+                viewHolder = new HotNewsViewHolder(hotNewsView, mOnItemClickListener);
                 break;
             case ITEM_OTHER_NEW:
                 View otherNewsView = inflater.inflate(R.layout.item_other_news, viewGroup, false);
-                viewHolder = new OtherNewsViewHolder(otherNewsView);
+                viewHolder = new OtherNewsViewHolder(otherNewsView, mOnItemClickListener);
                 break;
         }
         return viewHolder;
@@ -83,10 +84,12 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         switch (viewHolder.getItemViewType()) {
             case ITEM_HOT_NEW:
                 HotNewsViewHolder hotNewsViewHolder = (HotNewsViewHolder) viewHolder;
+                hotNewsViewHolder.setPosition(position);
                 configHotNewsHolder(hotNewsViewHolder, position);
                 break;
             case ITEM_OTHER_NEW:
                 OtherNewsViewHolder otherNewsViewHolder = (OtherNewsViewHolder) viewHolder;
+                otherNewsViewHolder.setPosition(position);
                 configOtherNewsHolder(otherNewsViewHolder, position);
                 break;
         }
@@ -120,5 +123,13 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void setItemsArr(List<News> items) {
         mNewses = items;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        mOnItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onClick(int position);
     }
 }

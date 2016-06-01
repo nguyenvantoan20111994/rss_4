@@ -1,5 +1,6 @@
 package framgia.vn.voanews.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import framgia.vn.voanews.R;
+import framgia.vn.voanews.activities.NewsDetailActivity;
 import framgia.vn.voanews.adapters.NewsAdapter;
 import framgia.vn.voanews.asyntask.AsyncResponse;
 import framgia.vn.voanews.asyntask.ReadRssAsyntask;
@@ -78,6 +80,16 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
         mRecyclerViewNView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new NewsAdapter(mNewses);
         mRecyclerViewNView.setAdapter(mAdapter);
+        mAdapter.setOnItemtClickListener(new NewsAdapter.OnItemtClickListener() {
+            @Override
+            public void onClick(int position) {
+                News news = mNewses.get(position);
+                Intent intent = new Intent(getActivity(), NewsDetailActivity.class);
+                intent.putExtra(NewsRepository.TITLE_FIELD, news.getTitle());
+                intent.putExtra(NewsRepository.CATEGORY_FIELD, news.getCategory());
+                getActivity().startActivity(intent);
+            }
+        });
     }
 
     @Override

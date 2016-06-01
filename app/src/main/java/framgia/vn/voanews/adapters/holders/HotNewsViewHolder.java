@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import framgia.vn.voanews.R;
+import framgia.vn.voanews.adapters.NewsAdapter;
 
 /**
  * Created by hoavt on 24/05/2016.
@@ -14,12 +15,21 @@ public class HotNewsViewHolder extends RecyclerView.ViewHolder {
     private ImageView mIvHotNews;
     private TextView mTvTitle;
     private TextView mTvTime;
-
-    public HotNewsViewHolder(View itemView) {
+    private int mPosition;
+    private NewsAdapter.OnItemClickListener mOnItemClickListener;
+    public HotNewsViewHolder(View itemView, NewsAdapter.OnItemClickListener onItemClickListener) {
         super(itemView);
+        mOnItemClickListener = onItemClickListener;
         mIvHotNews = (ImageView) itemView.findViewById(R.id.iv_hot_news);
         mTvTitle = (TextView) itemView.findViewById(R.id.tv_hot_title);
         mTvTime = (TextView) itemView.findViewById(R.id.tv_hot_time);
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnItemClickListener != null)
+                    mOnItemClickListener.onClick(mPosition);
+            }
+        });
     }
 
     public ImageView getIvHotNews() {
@@ -44,5 +54,9 @@ public class HotNewsViewHolder extends RecyclerView.ViewHolder {
 
     public void setTvTime(TextView tvTime) {
         mTvTime = tvTime;
+    }
+
+    public void setPosition(int position) {
+        mPosition = position;
     }
 }
