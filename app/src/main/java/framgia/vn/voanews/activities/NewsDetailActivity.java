@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 
 import framgia.vn.voanews.R;
+import framgia.vn.voanews.constant.Constant;
 import framgia.vn.voanews.data.model.News;
 import framgia.vn.voanews.data.service.NewsRepository;
 import framgia.vn.voanews.utils.CreatePdfUtil;
@@ -30,6 +31,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
     private ImageView mImageViewNews;
     private TextView mTextViewTitle;
     private TextView mTextViewDate;
+    private TextView mTextViewSeeMore;
     private ImageButton mButtonPrintPdf;
     private ImageButton mButtonShare;
     private TextView mTextViewSubContent;
@@ -54,6 +56,7 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         mImageViewNews = (ImageView) findViewById(R.id.iv_news_details);
         mTextViewTitle = (TextView) findViewById(R.id.tv_title_details);
         mTextViewDate = (TextView) findViewById(R.id.tv_date_details);
+        mTextViewSeeMore = (TextView) findViewById(R.id.tv_see_more_details);
         mButtonPrintPdf = (ImageButton) findViewById(R.id.ib_print_pdf_details);
         mButtonShare = (ImageButton) findViewById(R.id.ib_shares_details);
         mTextViewSubContent = (TextView) findViewById(R.id.tv_short_content_details);
@@ -67,6 +70,14 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         mTextViewDate.setText(TimeUtils.toStringDate(mNews.getDate()));
         mTextViewSubContent.setText(mNews.getDescription());
         mButtonPrintPdf.setOnClickListener(this);
+        mTextViewSeeMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(NewsDetailActivity.this, SeeMoreNewsActivity.class);
+                intent.putExtra(Constant.LINK_KEY, mNews.getLink());
+                startActivity(intent);
+            }
+        });
     }
 
     private void initData() {
