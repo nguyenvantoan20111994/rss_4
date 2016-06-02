@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     private String mTitleRss;
     private NewsRepository mNewsRepository;
     private Realm mRealm;
+    private ProgressBar mProgressBar;
     private NewsAdapter mAdapter;
     private List<News> mNewses = new ArrayList<>();
 
@@ -72,7 +74,6 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     private void initViews(View view) {
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         mRecyclerViewNView = (RecyclerView) view.findViewById(R.id.rv_news);
-        mSwipeRefreshLayout.setColorSchemeColors(R.color.blurGrey);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mRecyclerViewNView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mAdapter = new NewsAdapter(mNewses);
@@ -87,6 +88,12 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                 getActivity().startActivity(intent);
             }
         });
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+            }
+        });
     }
 
     @Override
@@ -96,7 +103,7 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     public void loadData() {
         if (CheckConnectionUtil.isInternetOn(getContext()) == true) {
-            new ReadRssAsyntask(getActivity(),mSwipeRefreshLayout, new AsyncResponse() {
+            new ReadRssAsyntask(getActivity(), mSwipeRefreshLayout, new AsyncResponse() {
                 @Override
                 public void processFinish(List<News> output) {
                     if (output != null) {
@@ -121,7 +128,6 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     public void onDestroyView() {
         mRealm.close();
         super.onDestroyView();
-
     }
 
     @Override
