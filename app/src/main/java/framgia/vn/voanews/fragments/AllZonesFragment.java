@@ -66,7 +66,6 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
         mRealm = Realm.getDefaultInstance();
         mNewsRepository = new NewsRepository(mRealm);
         loadData();
-
         return view;
     }
 
@@ -97,7 +96,7 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     public void loadData() {
         if (CheckConnectionUtil.isInternetOn(getContext()) == true) {
-            new ReadRssAsyntask(getActivity(), new AsyncResponse() {
+            new ReadRssAsyntask(getActivity(),mSwipeRefreshLayout, new AsyncResponse() {
                 @Override
                 public void processFinish(List<News> output) {
                     if (output != null) {
@@ -128,6 +127,5 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onRefresh() {
         loadData();
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 }

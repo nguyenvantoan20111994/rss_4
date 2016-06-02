@@ -122,8 +122,10 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         switch (id) {
             case R.id.ib_print_pdf_details:
                 print();
+                break;
             case R.id.ib_shares_details:
                 shareLink();
+                break;
         }
     }
 
