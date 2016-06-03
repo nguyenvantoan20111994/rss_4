@@ -88,6 +88,12 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                 getActivity().startActivity(intent);
             }
         });
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(true);
+            }
+        });
     }
 
     @Override
@@ -96,7 +102,7 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     public void loadData() {
-        if (CheckConnectionUtil.isInternetOn(getContext()) == true) {
+        if (CheckConnectionUtil.isInternetOn(getContext())) {
             new ReadRssAsyntask(getActivity(), new AsyncResponse() {
                 @Override
                 public void processFinish(List<News> output) {
@@ -106,6 +112,7 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                             public void onSuccess() {
                                 mNewses.addAll(mNewsRepository.getNewsByCategory(mTitleRss));
                                 mAdapter.notifyDataSetChanged();
+                                mSwipeRefreshLayout.setRefreshing(false);
                             }
                         });
                     }
@@ -128,6 +135,5 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onRefresh() {
         loadData();
-        mSwipeRefreshLayout.setRefreshing(false);
     }
 }
