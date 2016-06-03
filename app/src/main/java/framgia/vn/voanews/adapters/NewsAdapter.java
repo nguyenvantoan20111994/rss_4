@@ -1,6 +1,7 @@
 package framgia.vn.voanews.adapters;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -102,6 +103,10 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .load(newsItem.getEnclosure())
                     .into(otherNewsViewHolder.getIvNews());
             otherNewsViewHolder.getTvTitle().setText(newsItem.getTitle());
+            if (newsItem.isViewed())
+                otherNewsViewHolder.getTvTitle().setTextColor(ContextCompat.getColor(mContext, R.color.colorViewedNews));
+            else
+                otherNewsViewHolder.getTvTitle().setTextColor(ContextCompat.getColor(mContext, R.color.black));
             otherNewsViewHolder.getTvTime().setText(TimeUtils.toStringDate(newsItem.getDate()));
         }
     }
@@ -113,6 +118,10 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .load(newsItem.getEnclosure())
                     .into(hotNewsViewHolder.getIvHotNews());
             hotNewsViewHolder.getTvHotTitle().setText(newsItem.getTitle());
+            if (newsItem.isViewed())
+                hotNewsViewHolder.getTvHotTitle().setTextColor(ContextCompat.getColor(mContext, R.color.colorViewedNews));
+            else
+                hotNewsViewHolder.getTvHotTitle().setTextColor(ContextCompat.getColor(mContext, R.color.black));
             hotNewsViewHolder.getTvHotTime().setText(TimeUtils.toStringDate(newsItem.getDate()));
         }
     }
