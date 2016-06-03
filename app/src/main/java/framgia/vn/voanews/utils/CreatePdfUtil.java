@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.widget.Toast;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -25,6 +26,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import framgia.vn.voanews.R;
+
 /**
  * Created by toannguyen201194 on 31/05/2016.
  */
@@ -40,11 +43,9 @@ public class CreatePdfUtil {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         File pdfFolder = null;
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-        } else {
-            pdfFolder = new File(Environment.getExternalStorageDirectory() + File.separator + NAMEPDF);
+        pdfFolder = new File(Environment.getExternalStorageDirectory() + File.separator + NAMEPDF);
+        if (!pdfFolder.exists())
             pdfFolder.mkdirs();
-        }
         Date datePrinter = new Date();
         String timeStamp = new SimpleDateFormat(DATAFORMAT).format(datePrinter);
         fileName = new File(pdfFolder, timeStamp + ".pdf");
@@ -84,7 +85,11 @@ public class CreatePdfUtil {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(Uri.fromFile(fileName), "application/pdf");
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        application.startActivity(intent);
+        if (intent.resolveActivity(application.getPackageManager()) != null) {
+            application.startActivity(intent);
+        } else {
+            Toast.makeText(application, R.string.no_app_read_pdf, Toast.LENGTH_SHORT).show();
+        }
 
     }
 }

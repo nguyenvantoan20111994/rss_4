@@ -118,6 +118,8 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 mSwipeRefreshLayout.setRefreshing(false);
                             }
                         });
+                    } else {
+                        mSwipeRefreshLayout.setRefreshing(false);
                     }
                 }
             }).execute(mLinkRss, mTitleRss);
