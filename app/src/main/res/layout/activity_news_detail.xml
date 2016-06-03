@@ -82,9 +82,7 @@
                 android:layout_below="@+id/ln_news_options"
                 android:paddingLeft="@dimen/padding_normal_view"
                 android:textColor="@color/black"
-                android:textSize="@dimen/text_normal_size"
-                android:ellipsize="end"
-                android:maxLines="6"/>
+                android:textSize="@dimen/text_normal_size" />
 
             <TextView
                 android:id="@+id/tv_see_more_details"

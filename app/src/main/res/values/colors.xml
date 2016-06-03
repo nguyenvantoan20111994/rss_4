@@ -7,4 +7,5 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="colorDateText">#A2000000</color>
+    <color name="colorViewedNews">#7c7878</color>
 </resources>

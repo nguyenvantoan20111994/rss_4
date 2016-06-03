@@ -82,10 +82,12 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
             @Override
             public void onClick(int position) {
                 News news = mNewses.get(position);
+                mNewsRepository.updateNewsToViewedNews(news);
                 Intent intent = new Intent(getActivity(), NewsDetailActivity.class);
                 intent.putExtra(NewsRepository.TITLE_FIELD, news.getTitle());
                 intent.putExtra(NewsRepository.CATEGORY_FIELD, news.getCategory());
                 getActivity().startActivity(intent);
+                mAdapter.notifyItemChanged(position);
             }
         });
     }
@@ -104,6 +106,7 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                         mNewsRepository.insertNews(output, new NewsContract.OnInsertNewsListener() {
                             @Override
                             public void onSuccess() {
+                                mNewses.clear();
                                 mNewses.addAll(mNewsRepository.getNewsByCategory(mTitleRss));
                                 mAdapter.notifyDataSetChanged();
                             }
