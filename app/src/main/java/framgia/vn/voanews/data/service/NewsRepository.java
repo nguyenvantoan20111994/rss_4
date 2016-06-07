@@ -8,6 +8,7 @@ import java.util.List;
 import framgia.vn.voanews.data.model.News;
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Created by nghicv on 24/05/2016.
@@ -78,7 +79,7 @@ public class NewsRepository {
     public RealmResults<News> getNewsByCategory(String category) {
         return mRealm.where(News.class)
                 .equalTo(CATEGORY_FIELD, category)
-                .findAll();
+                .findAllSorted(DATE_FIELD, Sort.DESCENDING);
     }
 
     public void clearDB() {
