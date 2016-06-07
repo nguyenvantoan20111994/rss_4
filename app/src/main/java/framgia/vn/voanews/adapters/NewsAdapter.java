@@ -13,6 +13,7 @@ import java.util.List;
 
 import framgia.vn.voanews.R;
 import framgia.vn.voanews.adapters.holders.HotNewsViewHolder;
+import framgia.vn.voanews.adapters.holders.LoadingViewHolder;
 import framgia.vn.voanews.adapters.holders.OtherNewsViewHolder;
 import framgia.vn.voanews.data.model.News;
 import framgia.vn.voanews.utils.TimeUtils;
@@ -24,6 +25,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public final int ITEM_HOT_NEW = 6;
     public final int ITEM_OTHER_NEW = 9;
+    public final int ITEM_LOADING = 0;
     // The mNewses to display in your RecyclerView
     private List<News> mNewses;
     private Context mContext;
@@ -42,6 +44,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
+        if (mNewses.get(position) == null)
+            return ITEM_LOADING;
         return position == 0 ? ITEM_HOT_NEW : ITEM_OTHER_NEW;
     }
 
@@ -68,6 +72,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 View otherNewsView = inflater.inflate(R.layout.item_other_news, viewGroup, false);
                 viewHolder = new OtherNewsViewHolder(otherNewsView, mOnItemClickListener);
                 break;
+            case ITEM_LOADING:
+                View view = inflater.inflate(R.layout.item_loading, viewGroup, false);
+                viewHolder = new LoadingViewHolder(view);
         }
         return viewHolder;
     }

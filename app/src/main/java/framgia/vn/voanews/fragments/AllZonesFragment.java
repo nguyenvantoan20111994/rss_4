@@ -2,6 +2,7 @@ package framgia.vn.voanews.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import framgia.vn.voanews.activities.NewsDetailActivity;
 import framgia.vn.voanews.adapters.NewsAdapter;
 import framgia.vn.voanews.asyntask.AsyncResponse;
 import framgia.vn.voanews.asyntask.ReadRssAsyntask;
+import framgia.vn.voanews.constant.Constant;
 import framgia.vn.voanews.data.model.News;
 import framgia.vn.voanews.data.service.NewsContract;
 import framgia.vn.voanews.data.service.NewsRepository;
@@ -31,6 +34,7 @@ import io.realm.Realm;
 public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String LINK_BUND = "link";
     private static final String TITLE_BUND = "title";
+    private final int PAGE_PER = 20;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerViewNView;
     private String mLinkRss;
@@ -39,6 +43,8 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     private Realm mRealm;
     private NewsAdapter mAdapter;
     private List<News> mNewses = new ArrayList<>();
+    private List<News> mShowedNews = new ArrayList<>();
+    private boolean mIsLoading;
 
     public static AllZonesFragment newInstance(String link, String title) {
         AllZonesFragment allZonesFragment = new AllZonesFragment();
@@ -76,12 +82,12 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
         mSwipeRefreshLayout.setColorSchemeColors(R.color.blurGrey);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mRecyclerViewNView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAdapter = new NewsAdapter(mNewses);
+        mAdapter = new NewsAdapter(mShowedNews);
         mRecyclerViewNView.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener(new NewsAdapter.OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                News news = mNewses.get(position);
+                News news = mShowedNews.get(position);
                 mNewsRepository.updateNewsToViewedNews(news);
                 Intent intent = new Intent(getActivity(), NewsDetailActivity.class);
                 intent.putExtra(NewsRepository.TITLE_FIELD, news.getTitle());
@@ -94,6 +100,23 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
             @Override
             public void run() {
                 mSwipeRefreshLayout.setRefreshing(true);
+            }
+        });
+        mRecyclerViewNView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0) {
+                    int totalItemCount = recyclerView.getLayoutManager().getItemCount();
+                    int lastVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    if (!mIsLoading) {
+                        if (totalItemCount <= lastVisibleItem + 1) {
+                            mIsLoading = true;
+                            loadMore();
+                        }
+                        
+                    }
+                }
             }
         });
     }
@@ -113,7 +136,9 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                             @Override
                             public void onSuccess() {
                                 mNewses.clear();
+                                mShowedNews.clear();
                                 mNewses.addAll(mNewsRepository.getNewsByCategory(mTitleRss));
+                                mShowedNews.addAll(mNewses.subList(mShowedNews.size(), mShowedNews.size() + PAGE_PER));
                                 mAdapter.notifyDataSetChanged();
                                 mSwipeRefreshLayout.setRefreshing(false);
                             }
@@ -125,9 +150,41 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
             }).execute(mLinkRss, mTitleRss);
 
         } else {
+            mNewses.clear();
+            mShowedNews.clear();
+            mNewses.addAll(mNewsRepository.getNewsByCategory(mTitleRss));
+            mShowedNews.addAll(mNewses.subList(mShowedNews.size(), mShowedNews.size() + PAGE_PER));
+            mAdapter.notifyDataSetChanged();
             Toast.makeText(getActivity(), getString(R.string.connect_network_error), Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    private void loadMore() {
+        if(mShowedNews.size() == mNewses.size()) {
+            mIsLoading = false;
+            return;
+        }
+        mShowedNews.add(null);
+        mAdapter.notifyItemChanged(mShowedNews.size() - 1);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mShowedNews.remove(mShowedNews.size() - 1);
+                mAdapter.notifyItemRemoved(mShowedNews.size() - 1);
+                addShowedNews();
+                mAdapter.notifyDataSetChanged();
+                mIsLoading = false;
+            }
+        }, Constant.TIME_DELAY);
+    }
+
+    private void addShowedNews() {
+        int start = mShowedNews.size();
+        if(mShowedNews.size() + PAGE_PER > mNewses.size())
+            mShowedNews.addAll(mNewses.subList(start, mNewses.size()));
+        else
+            mShowedNews.addAll(mNewses.subList(start, start + PAGE_PER));
     }
 
     @Override
