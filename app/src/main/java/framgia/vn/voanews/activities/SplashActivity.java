@@ -19,6 +19,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private Realm mRealm;
     private NewsRepository mNewsRepository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);

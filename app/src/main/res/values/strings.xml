@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">voaNews</string>
     <string name="connect_network_error">Please check connection network!</string>
+    <string name="no_allow_create_folder">If you nt allow you can print file pdf!</string>
+    <string name="no_app_read_pdf">No application to open pdf file</string>
     <string name="see_more"><![CDATA[...See more]]></string>
     <string name="facebook_app_id">888590251269506</string>
+    <string name="no_allow_print">please Access Permissions > Click Storage </string>
+    <string name="Settings">Settings</string>
+    <string name="permissions">You need allow permissions for app</string>
+    <string name="retry">Retry</string>
 </resources>
