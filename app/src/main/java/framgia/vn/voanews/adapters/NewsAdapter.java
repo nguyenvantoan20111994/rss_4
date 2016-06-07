@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -123,6 +124,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (newsItem != null) {
             Picasso.with(mContext)
                     .load(newsItem.getEnclosure())
+                    .placeholder(R.drawable.ic_breaking_news)
+                    .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                     .into(hotNewsViewHolder.getIvHotNews());
             hotNewsViewHolder.getTvHotTitle().setText(newsItem.getTitle());
             if (newsItem.isViewed())
