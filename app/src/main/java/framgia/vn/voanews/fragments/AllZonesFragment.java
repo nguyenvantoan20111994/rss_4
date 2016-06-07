@@ -135,27 +135,38 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                         mNewsRepository.insertNews(output, new NewsContract.OnInsertNewsListener() {
                             @Override
                             public void onSuccess() {
-                                mNewses.clear();
-                                mShowedNews.clear();
-                                mNewses.addAll(mNewsRepository.getNewsByCategory(mTitleRss));
-                                mShowedNews.addAll(mNewses.subList(mShowedNews.size(), mShowedNews.size() + PAGE_PER));
-                                mAdapter.notifyDataSetChanged();
+                                initShowedNews();
                                 mSwipeRefreshLayout.setRefreshing(false);
                             }
                         });
                     } else {
                         mSwipeRefreshLayout.setRefreshing(false);
+                        initShowedNews();
                     }
                 }
             }).execute(mLinkRss, mTitleRss);
 
         } else {
-            mNewses.clear();
-            mShowedNews.clear();
-            mNewses.addAll(mNewsRepository.getNewsByCategory(mTitleRss));
-            mShowedNews.addAll(mNewses.subList(mShowedNews.size(), mShowedNews.size() + PAGE_PER));
-            mAdapter.notifyDataSetChanged();
+            mSwipeRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            });
+            initShowedNews();
             Toast.makeText(getActivity(), getString(R.string.connect_network_error), Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    private void initShowedNews () {
+        mNewses.clear();
+        mShowedNews.clear();
+        List<News> newses = mNewsRepository.getNewsByCategory(mTitleRss);
+        if (newses != null) {
+            mNewses.addAll(newses);
+            addShowedNews();
+            mAdapter.notifyDataSetChanged();
         }
 
     }
