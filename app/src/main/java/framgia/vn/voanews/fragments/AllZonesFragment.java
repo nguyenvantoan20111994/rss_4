@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -114,7 +113,7 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                             mIsLoading = true;
                             loadMore();
                         }
-                        
+
                     }
                 }
             }
@@ -140,26 +139,21 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                             }
                         });
                     } else {
-                        mSwipeRefreshLayout.setRefreshing(false);
                         initShowedNews();
+                        swipeRefeshFalse();
+                        Toast.makeText(getActivity(),getString(R.string.internet_error),Toast.LENGTH_SHORT).show();
                     }
                 }
             }).execute(mLinkRss, mTitleRss);
 
         } else {
-            mSwipeRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
-            });
+            swipeRefeshFalse();
             initShowedNews();
-            Toast.makeText(getActivity(), getString(R.string.connect_network_error), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.connect_network_error), Toast.LENGTH_SHORT).show();
         }
-
     }
 
-    private void initShowedNews () {
+    private void initShowedNews() {
         mNewses.clear();
         mShowedNews.clear();
         List<News> newses = mNewsRepository.getNewsByCategory(mTitleRss);
@@ -168,11 +162,10 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
             addShowedNews();
             mAdapter.notifyDataSetChanged();
         }
-
     }
 
     private void loadMore() {
-        if(mShowedNews.size() == mNewses.size()) {
+        if (mShowedNews.size() == mNewses.size()) {
             mIsLoading = false;
             return;
         }
@@ -192,7 +185,7 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     private void addShowedNews() {
         int start = mShowedNews.size();
-        if(mShowedNews.size() + PAGE_PER > mNewses.size())
+        if (mShowedNews.size() + PAGE_PER > mNewses.size())
             mShowedNews.addAll(mNewses.subList(start, mNewses.size()));
         else
             mShowedNews.addAll(mNewses.subList(start, start + PAGE_PER));
@@ -208,5 +201,14 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onRefresh() {
         loadData();
+    }
+
+    public void swipeRefeshFalse() {
+        mSwipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 }
