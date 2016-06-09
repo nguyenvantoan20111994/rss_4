@@ -19,7 +19,6 @@ public class News extends RealmObject {
     @Required
     private String mLink;
 
-    @Required
     private String mEnclosure;
 
     @Required

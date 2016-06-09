@@ -19,18 +19,4 @@
         android:layout_alignParentBottom="true"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_breaking_news" />
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:background="@drawable/bg_rounded">
-
-        <ProgressBar
-            style="@style/Widget.AppCompat.Light.ActionMode.Inverse"
-            android:layout_width="@dimen/width_progressbar"
-            android:layout_height="@dimen/height_progressbar"
-            android:layout_centerInParent="true"
-            android:layout_margin="@dimen/layout_progressbar_margin" />
-    </RelativeLayout>
 </RelativeLayout>

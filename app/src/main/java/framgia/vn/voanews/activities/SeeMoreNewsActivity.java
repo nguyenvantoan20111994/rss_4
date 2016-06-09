@@ -1,18 +1,15 @@
 package framgia.vn.voanews.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
 
 import java.io.IOException;
 
@@ -25,11 +22,12 @@ import framgia.vn.voanews.utils.HtmlParser;
  */
 public class SeeMoreNewsActivity extends AppCompatActivity {
 
+    public static final String MINE_TYPE = "text/html";
+    public static final String ENCODING = "UTF-8";
     private WebView mWebViewNews;
     private Toolbar mToolbar;
     private String mLink;
-    public static final String MINE_TYPE = "text/html";
-    public static final String ENCODING = "UTF-8";
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,10 +73,21 @@ public class SeeMoreNewsActivity extends AppCompatActivity {
         }
 
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog = new ProgressDialog(SeeMoreNewsActivity.this);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setTitle("Voanews.com");
+            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.show();
+        }
+
+        @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if(s != null)
+            if (s != null)
                 mWebViewNews.loadData(s, MINE_TYPE, ENCODING);
+            mProgressDialog.dismiss();
         }
     }
 }

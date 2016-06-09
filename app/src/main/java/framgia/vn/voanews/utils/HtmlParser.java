@@ -3,7 +3,6 @@ package framgia.vn.voanews.utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
 
@@ -13,8 +12,9 @@ import java.io.IOException;
 public class HtmlParser {
     public static final String CONTAINER_SELECTOR = "div.body-container";
     public static final String TITLE_SELECTOR = "col-title";
-    private static final String RELATED="div.media-block-wrapper";
     public static final String CONTAINER_VIDEO_SELECTOR = "div[class=intro content-offset]";
+    private static final String RELATED = "div.media-block-wrapper";
+
     public static String parser(String url) throws IOException {
         Document document = Jsoup.connect(url).get();
         document.select(RELATED).remove();
