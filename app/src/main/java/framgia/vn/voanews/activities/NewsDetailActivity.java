@@ -33,6 +33,7 @@ import framgia.vn.voanews.R;
 import framgia.vn.voanews.constant.Constant;
 import framgia.vn.voanews.data.model.News;
 import framgia.vn.voanews.data.service.NewsRepository;
+import framgia.vn.voanews.utils.CheckConnectionUtil;
 import framgia.vn.voanews.utils.CreatePdfUtil;
 import framgia.vn.voanews.utils.TimeUtils;
 import io.realm.Realm;
@@ -91,6 +92,9 @@ public class NewsDetailActivity extends AppCompatActivity implements View.OnClic
         mTextViewDate.setText(TimeUtils.toStringDate(mNews.getDate()));
         mTextViewSubContent.setText(mNews.getDescription());
         mButtonPrintPdf.setOnClickListener(this);
+        if(!CheckConnectionUtil.isInternetOn(this)){
+            mTextViewSeeMore.setVisibility(View.INVISIBLE);
+        }
         mTextViewSeeMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

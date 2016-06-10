@@ -3,6 +3,7 @@ package framgia.vn.voanews.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -95,12 +96,6 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                 mAdapter.notifyItemChanged(position);
             }
         });
-        mSwipeRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mSwipeRefreshLayout.setRefreshing(true);
-            }
-        });
         mRecyclerViewNView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -126,6 +121,7 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     public void loadData() {
+        setRefesh(true);
         if (CheckConnectionUtil.isInternetOn(getContext())) {
             new ReadRssAsyntask(getActivity(), new AsyncResponse() {
                 @Override
@@ -135,19 +131,19 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
                             @Override
                             public void onSuccess() {
                                 initShowedNews();
-                                mSwipeRefreshLayout.setRefreshing(false);
+                                setRefesh(false);
                             }
                         });
                     } else {
                         initShowedNews();
-                        swipeRefeshFalse();
-                        Toast.makeText(getActivity(),getString(R.string.internet_error),Toast.LENGTH_SHORT).show();
+                        setRefesh(false);
+                        showInternetErrorSnackBar();
                     }
                 }
             }).execute(mLinkRss, mTitleRss);
 
         } else {
-            swipeRefeshFalse();
+            setRefesh(false);
             initShowedNews();
             Toast.makeText(getActivity(), getString(R.string.connect_network_error), Toast.LENGTH_SHORT).show();
         }
@@ -203,12 +199,22 @@ public class AllZonesFragment extends Fragment implements SwipeRefreshLayout.OnR
         loadData();
     }
 
-    public void swipeRefeshFalse() {
+    public void setRefesh(final boolean checkSwipe) {
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeRefreshLayout.setRefreshing(checkSwipe);
             }
         });
+    }
+
+    public void showInternetErrorSnackBar() {
+        Snackbar.make(getView(), getString(R.string.internet_error)
+                , Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.retry), new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadData();
+            }
+        }).show();
     }
 }
